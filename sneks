@@ -1,0 +1,435 @@
+import pygame
+import time
+import random
+pygame.init()
+UP = False
+DOWN = False
+RIGHT = False
+LEFT = False
+W = False
+D = False
+A = False
+S = False
+
+img2 = pygame.image.load('snek2.png')
+img = pygame.image.load('snek.png')
+def text_objects(text, color,size):
+    if size == "small":
+        textSurface = smallfont.render(text, True, color)
+    elif size == "medium":
+        textSurface = medfont.render(text, True, color)
+    elif size == "large":
+        textSurface = largefont.render(text, True, color)
+    return textSurface, textSurface.get_rect()
+
+def message_to_screen(msg,color, y_dis=0, size = "small"):
+    textSurf, textRect = text_objects(msg,color,size)
+    """screen_text = font.render(msg, True, color)
+    gamedisplay.blit(screen_text,[display_width/2,display_height/2])"""
+    textRect.center = (display_width/2), ((display_height/2)+y_dis)
+    gamedisplay.blit(textSurf, textRect)
+
+def pause_message(msg,color, size):
+    screen_text = font.render(msg, True, color)
+    gamedisplay.blit(screen_text, [display_width / 2, display_height / 2])
+
+def playerscore(msg,color,y_dis=0, x_dis=0, size = "small"):
+    textSurf, textRect = text_objects(msg,color,size)
+    textRect.center = ((display_width/2)+x_dis), ((display_height/2)+y_dis)
+    gamedisplay.blit(textSurf, textRect)
+
+
+def playerscore2(msg,color, size = "small"):
+    screen_text = font.render(msg, True, color)
+    gamedisplay.blit(screen_text, [(display_width-10), (display_width-10)])
+
+def endscore(msg,color,y_dis=0, size= "small"):
+    textSurf, textRect = text_objects(msg,color,size)
+    textRect.center = (display_width/2), ((display_height/2)+y_dis)
+    gamedisplay.blit(textSurf, textRect)
+
+font = pygame.font.SysFont("comicsansms",25)
+smallfont = pygame.font.SysFont("comicsansms",25)
+medfont = pygame.font.SysFont("comicsansms",50)
+largefont = pygame.font.SysFont("comicsansms",80)
+def snake(block_size, snakelist):
+    if not pause:
+        gamedisplay.blit(img, (snakelist[-1][0], snakelist[-1][1]))
+        for XnY in snakelist[:-1]:
+            pygame.draw.rect(gamedisplay, green, [XnY[0], XnY[1], block_size, block_size])
+
+def snake2(block_size, snakelist2):
+    if not pause:
+        gamedisplay.blit(img2, (snakelist2[-1][0], snakelist2[-1][1]))
+        for XnY in snakelist2[:-1]:
+            pygame.draw.rect(gamedisplay, purple, [XnY[0], XnY[1], block_size, block_size])
+
+def menu():
+    intro = True
+    while intro == True:
+        gamedisplay.fill(white)
+        message_to_screen("Hi", black,0,"large")
+        message_to_screen("eat bapples", black, -50, "small")
+        pygame.display.update()
+
+
+
+white = (255,255,255)
+black = (0,0,0)
+red = (255,0,0)
+green = (34, 177, 76)
+purple =(163, 73, 164)
+FPS = 12
+score = 0
+score2=0
+block_size = 10
+display_width = 600
+display_height = 500
+text="bugger"
+centre = display_width-len(text)
+gamedisplay = pygame.display.set_mode((display_width,display_height))
+pygame.display.set_caption('snek')
+gameExit = False
+gameOver = False
+
+lead_x = -200
+lead_y = -200
+lead_x2 = 200
+lead_y2= 200
+lead_x_change = 0
+lead_y_change = 0
+lead_x_change2=0
+lead_y_change2=0
+movement_speed = 10
+clock = pygame.time.Clock()
+current_direction = ""
+current_direction2 = ""
+
+
+
+
+def game_loop():
+    global current_direction
+    global current_direction2
+    global UP, RIGHT, DOWN, LEFT, a, s, d, w
+    global img
+    global img2
+    global pause
+    global event
+    global movement_speed
+    global Winner
+    global time
+    global key_press
+    for event in pygame.event.get():
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_DOWN or event.key == pygame.K_UP or event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT or event.key == pygame.K_s or event.key == pygame.K_w or event.key == pygame.K_a or event.key == pygame.K_d:
+                pause = False
+    snakelist = []
+    snakelist2 = []
+    snakelength = 1
+    snakelength2 = 1
+    gameExit = False
+    gameOver = False
+    lead_x = display_width / 2
+    lead_y = display_height / 2
+    lead_x_change = 0
+    lead_y_change = 0
+    lead_x2 = 200
+    lead_y2 = 200
+    lead_x_change2 = 0
+    lead_y_change2 = 0
+    apples=3
+    Apple=[]
+    pause = False
+    """Apple= []
+    Begin w appending two apples
+    if apple eating conditions are satisfied remove Apple from list and replace with new apple"""
+    """Apple=[(RandAppleX, RandAppleY), (RandAppleX, RandAppleY)]
+    if snakehead=RandAppleX and snakehead= RandAppleY:
+    Apple.remove RandAppleX from AppleX
+    Apple.append(RandAppleX,RandAppleY)
+    """
+
+    while not gameExit:
+        key_press = False
+        while gameOver == True:
+            if not pause:
+                gamedisplay.fill(white)
+            message_to_screen("GAME OVER", red,y_dis= -100, size="large")
+            message_to_screen("Press C to try agen, press Q to quit", red, y_dis = 100)
+            message_to_screen("Greens score was: " + score, black, y_dis = 20, size = "small")
+            message_to_screen("Purples score was:" + score2, black, y_dis = 50, size = "small")
+            if Winner == 1:
+                message_to_screen("green snek wins",black, y_dis=-50)
+            elif Winner == 2:
+                message_to_screen("purple snek wins", black,y_dis = -50)
+            elif Winner == 0:
+                message_to_screen("you both lose :(", black, y_dis = -30)
+
+
+            pygame.display.update()
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    gameExit = True
+                    gameOver = False
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_c:
+                        game_loop()
+                    if event.key == pygame.K_q:
+                        gameExit = True
+                        gameOver = False
+
+        if current_direction == "up":
+            UP = True
+            RIGHT = False
+            LEFT = False
+            DOWN = False
+        if current_direction == "down":
+            UP = False
+            RIGHT = False
+            LEFT = False
+            DOWN = True
+        if current_direction == "right":
+            UP = False
+            RIGHT = True
+            LEFT = False
+            DOWN = False
+        if current_direction == "left":
+            UP = False
+            RIGHT = False
+            LEFT = True
+            DOWN = False
+        if current_direction2 == "w":
+            W = True
+            D = False
+            A = False
+            S = False
+        if current_direction2 == "s":
+            W = False
+            D = False
+            A = False
+            S = True
+        if current_direction2 == "d":
+            W = False
+            D = True
+            A = False
+            S = False
+        if current_direction2 == "a":
+            W = False
+            D = False
+            A = True
+            S = False
+
+        for event in pygame.event.get():
+            #print(event)
+            if event.type == pygame.QUIT:
+                gameExit = True
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_LEFT:
+                    if current_direction != "right" and key_press == False:
+                        lead_x_change = -movement_speed
+                        lead_y_change = 0
+                        current_direction = "left"
+                        img = pygame.image.load('snek.png')
+                        img = pygame.transform.rotate(img, 90)
+                        key_press = True
+
+                if event.key == pygame.K_RIGHT and key_press == False:
+                    if current_direction != "left":
+                        lead_x_change = movement_speed
+                        lead_y_change = 0
+                        current_direction = "right"
+                        img = pygame.image.load('snek.png')
+                        img = pygame.transform.rotate(img, -90)
+                        key_press = True
+
+                if event.key == pygame.K_UP and key_press == False:
+                    if current_direction != "down":
+                        lead_y_change = -movement_speed
+                        lead_x_change = 0
+                        current_direction = "up"
+                        img = pygame.image.load('snek.png')
+                        img = pygame.transform.rotate(img, 0)
+                        key_press = True
+
+                if event.key == pygame.K_DOWN and key_press == False:
+                    if current_direction != "up":
+                        lead_y_change = movement_speed
+                        lead_x_change = 0
+                        current_direction = "down"
+                        img = pygame.image.load('snek.png')
+                        img = pygame.transform.rotate(img, 180)
+                        key_press = True
+
+                if event.key == pygame.K_a and key_press == False:
+                    if current_direction2 != "d":
+                        lead_x_change2 = -movement_speed
+                        lead_y_change2 = 0
+                        current_direction2 = "a"
+                        img2 = pygame.image.load('snek2.png')
+                        img2 = pygame.transform.rotate(img2, 90)
+                        key_press = True
+                if event.key == pygame.K_d and key_press == False:
+                    if current_direction2 != "a":
+                        lead_x_change2 = movement_speed
+                        lead_y_change2 = 0
+                        current_direction2 = "d"
+                        img2 = pygame.image.load('snek2.png')
+                        img2 = pygame.transform.rotate(img2, -90)
+                        key_press = True
+                if event.key == pygame.K_w and key_press == False:
+                    if current_direction2 != "s":
+                        lead_y_change2 = -movement_speed
+                        lead_x_change2 = 0
+                        current_direction2 = "w"
+                        img2 = pygame.image.load('snek2.png')
+                        img2 = pygame.transform.rotate(img2, 0)
+                        key_press = True
+                if event.key == pygame.K_s and key_press == False:
+                    if current_direction2 != "w":
+                        lead_y_change2 = movement_speed
+                        lead_x_change2 = 0
+                        current_direction2 = "s"
+                        img2 = pygame.image.load('snek2.png')
+                        img2 = pygame.transform.rotate(img2, 180)
+                        key_press = True
+
+                if event.key == pygame.K_p:
+                    current_direction = ""
+                    current_direction2 = ""
+                    pause = True
+                    pygame.display.update()
+                if event.key == pygame.K_DOWN or event.key == pygame.K_UP or event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT or event.key == pygame.K_s or event.key == pygame.K_w or event.key == pygame.K_a or event.key == pygame.K_d and pause == True:
+                    pause = False
+                    gamedisplay.fill(white)
+                    pygame.display.update()
+
+
+        if lead_x >= display_width or lead_x < 0 or lead_y >= display_height or lead_y < 0 and pause == False:
+            gameOver= True
+            Winner = 2
+        if lead_x2 >= display_width or lead_x2 < 0 or lead_y2 >= display_height or lead_y2 < 0 and pause == False:
+            gameOver= True
+            Winner = 1
+        lead_x += lead_x_change
+        lead_y += lead_y_change
+
+        lead_x2 += lead_x_change2
+        lead_y2 += lead_y_change2
+
+        if not pause:
+           gamedisplay.fill(white)
+        score = str(len(snakelist)-1)
+        score2 = str(len(snakelist2) - 1)
+
+        if pause == True:
+            lead_x_change = 0
+            lead_y_change = 0
+            lead_x_change2 = 0
+            lead_y_change2 = 0
+            message_to_screen("PAUSED", black,y_dis=0,size="small")
+
+        if pause == False:
+            message_to_screen('',black,size="small")
+
+
+        playerscore("Green: " + score, black, y_dis= -230, x_dis=-150, size= "small")
+        playerscore("Purple: " + score2, black, y_dis= -230, x_dis=150, size= "small")
+        pygame.display.update()
+        AppleThick = 10
+        for apple in Apple:
+
+            pygame.draw.rect(gamedisplay, red, [apple[0], apple[1], AppleThick, AppleThick])
+
+        snakehead = []
+        snakehead2= []
+        snakehead.append(lead_x)
+        snakehead.append(lead_y)
+        snakehead2.append(lead_x2)
+        snakehead2.append(lead_y2)
+        snakelist.append(snakehead)
+        snakelist2.append(snakehead2)
+        if lead_x == lead_x2 and lead_y == lead_y2:
+            gameOver = True
+        if len(snakelist) > snakelength:
+            del snakelist[0]
+        if len(snakelist2) > snakelength2:
+            del snakelist2[0]
+
+        snakebody = snakelist.copy()
+        del snakebody[-1]
+        snakebody2 = snakelist2.copy()
+        del snakebody2[-1]
+
+        if snakebody is None:
+            snakebody = []
+        if snakebody2 is None:
+            snakebody2 = []
+
+        if snakehead in snakelist2 or snakehead in snakebody:
+            message_to_screen("Purple snekk wins", black)
+            Winner = 2
+            gameOver = True
+        if snakehead2 in snakelist or snakehead2 in snakebody2:
+            message_to_screen("Green snek wins", black)
+            Winner = 1
+            gameOver = True
+        if snakehead == snakehead2:
+            Winner=0
+
+        snake(block_size, snakelist)
+        snake2(block_size, snakelist2)
+
+        """if lead_x >= AppleX and lead_x < AppleX+AppleThick and lead_y >= AppleY and lead_y < AppleY+AppleThick:
+            AppleX = random.randrange(0, display_width - block_size)
+            AppleY = random.randrange(0, display_height - block_size)
+            AppleX = round(AppleX)# / 10.0) * 10.0
+            AppleY = round(AppleY)# / 10.0) * 10.0
+            snakelength += 1"""
+        """if lead_x > AppleX and lead_x < (AppleX+AppleThick) or (lead_x+block_size) > AppleX and (lead_x+block_size) < (AppleX+AppleThick):
+            if lead_y > AppleY and lead_y < (AppleY + AppleThick) or (lead_y + block_size) > AppleY and (lead_y + block_size) < (AppleY + AppleThick):
+                AppleX = random.randrange(0, display_width - block_size)
+                AppleY = random.randrange(0, display_height - block_size)"""
+        """if (lead_x in range(AppleX, AppleX+AppleThick) or (lead_x+block_size) in range(AppleX, AppleX+AppleThick))  and (lead_y in range(AppleY, AppleY+AppleThick) or (lead_y+block_size) in range(AppleY, AppleY+AppleThick)):"""
+
+        for apple in Apple:
+            AppleX = apple[0]
+            AppleY = apple[1]
+            if lead_x == AppleX and lead_y == AppleY:
+                Apple.remove(apple)
+
+                snakelength += 1
+            elif lead_x2 == AppleX and lead_y2 == AppleY:
+                Apple.remove(apple)
+
+                snakelength2 += 1
+
+
+
+        while len(Apple) < apples:
+            RandAppleX = random.randrange(0, display_width - block_size)
+            RandAppleY = random.randrange(0, display_height - block_size)
+
+
+            RandAppleX = round(RandAppleX / 10) * 10
+            RandAppleY = round(RandAppleY / 10) * 10
+
+            RandApple = [RandAppleX, RandAppleY]
+            Apple.append(RandApple)
+
+        pygame.display.update()
+        clock.tick(FPS)
+"""change start positions
+LAN
+Fix quit bug
+Apple sprite
+Start screen
+soundtrack
+make into an executable file
+charcter selection
+sound effects
+
+
+"""
+game_loop()
